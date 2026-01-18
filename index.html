@@ -221,24 +221,30 @@
         }
         function FilterByPrice(arr) {
             showProducts(arr.filter(p => p.price >= 1000));
+            document.getElementById("forms").classList.toggle("formmbl");
         }
         function FilterByRating(arr) {
             showProducts(arr.filter(p => p.rating >= 4));
+            document.getElementById("forms").classList.toggle("formmbl");
         }
         function lowtohigh(arr) {
             arr.sort((a, b) => a.price - b.price);
+            document.getElementById("forms").classList.toggle("formmbl");
             showProducts(arr);
         }
         function Hightolow(arr) {
             arr.sort((a, b) => b.price - a.price);
+            document.getElementById("forms").classList.toggle("formmbl");
             showProducts(arr);
         }
         function SearchProducts(arr) {
+            document.getElementById("forms").classList.toggle("formmbl");
             showProducts(arr.filter(p => p.name.toLowerCase().includes(searchbox.value.toLowerCase())));
         }
 
         // ADD & REMOVE
         function AddItems() {
+            document.getElementById("forms").classList.toggle("formmbl");
             products.push({
                 name: itemname.value,
                 price: +itemprice.value,
@@ -258,6 +264,7 @@
             }, 3000)
         }
         function RemoveItems(name) {
+            document.getElementById("forms").classList.toggle("formmbl");
             let confirmationdel = confirm("Are you sure to delete this item ?");
             if (confirmationdel == true) {
                 let i = products.findIndex(p => p.name === name);
@@ -292,6 +299,5 @@
 
     </script>
 </body>
-
 
 </html>
