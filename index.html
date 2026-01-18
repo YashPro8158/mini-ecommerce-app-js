@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini E-Commerce</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f4f6f8;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* PRODUCTS GRID */
+        #products {
+            width: 65%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        #mblctrlbtn {
+            position: absolute;
+            top: 0%;
+            right: 37%;
+            display: none;
+            width: 20%;
+            height: 50px;
+        }
+
+        /* PRODUCT CARD */
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .card h3 {
+            margin: 10px 0 5px;
+        }
+
+        .card p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+
+        /* SIDEBAR */
+        .forms {
+            width: 35%;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .forms h2 {
+            margin-top: 20px;
+        }
+
+        .format {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        button {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #1e40af;
+        }
+
+        .tostmessage {
+            font-family: sans-serif;
+            font-size: 18px;
+        }
+
+        @media screen and (max-width:990px) {
+            #mblctrlbtn {
+                display: block;
+                width: 40%;
+            }
+
+            .forms {
+                position: absolute;
+                display: none;
+                right: 0%;
+            }
+
+            .formmbl {
+                width: 56%;
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🛒 Mini E-Commerce App </h1>
+    <h3 class="tostmessage" id="tostmessage"></h3>
+
+    <div class="container">
+
+        <!-- PRODUCTS -->
+        <div id="products"></div>
+        <!-- Mobile Controls Bnt -->
+        <button id="mblctrlbtn">Click For Sort & Filter</button>
+        <!-- CONTROLS -->
+        <div class="forms" id="forms">
+
+            <select id="filters" class="format" onchange="FilterbyCategory(products)">
+                <option value="Fashion">Fashion</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Jwellery">Jwellery</option>
+                <option value="Home & Kitchen">Home & Kitchen</option>
+            </select>
+
+            <button class="format" onclick="lowtohigh(products)">Sort Price Low → High</button>
+            <button class="format" onclick="Hightolow(products)">Sort Price High → Low</button>
+            <button class="format" onclick="FilterByRating(products)">Rating Above 4</button>
+            <button class="format" onclick="FilterByPrice(products)">Price Above ₹1000</button>
+
+            <input type="search" id="searchbox" placeholder="Search product" class="format">
+            <button class="format" onclick="SearchProducts(products)">Search</button>
+
+            <h2>Add Product</h2>
+            <input id="itemname" class="format" placeholder="Name">
+            <input id="itemprice" class="format" type="number" placeholder="Price">
+            <input id="itemrating" class="format" type="number" placeholder="Rating">
+            <input id="itemcategory" class="format" placeholder="Category">
+            <input id="itemimage" class="format" placeholder="Image URL">
+            <button class="format" onclick="AddItems()">Add Product</button>
+
+            <h2>Remove Product</h2>
+            <input id="username" class="format" placeholder="Enter name">
+            <button class="format" onclick="RemoveItems(username.value)">Remove</button>
+
+        </div>
+    </div>
+
+    <script>
+
+
+        let products = [
+            {
+                name: "Samsung Galaxy S25",
+                price: 122999,
+                rating: 4.3,
+                category: "Electronics",
+                image: "https://m.media-amazon.com/images/I/71T10gT0BSL._SL1500_.jpg"
+            },
+            {
+                name: "3 Seater Sofa",
+                price: 7649,
+                rating: 4,
+                category: "Home & Kitchen",
+                image: "https://m.media-amazon.com/images/I/61otO3I3ICL._SL1024_.jpg"
+            },
+            {
+                name: "Boat Airdopes",
+                price: 999,
+                rating: 3.8,
+                category: "Electronics",
+                image: "https://m.media-amazon.com/images/I/61VbNTLERYL._SL1500_.jpg"
+            }
+        ];
+        let saved = localStorage.getItem("products");
+
+        if (saved) {
+            products = JSON.parse(saved);
+        }
+        function showProducts(arr) {
+            let html = "";
+            arr.forEach(p => {
+                html += `
+        <div class="card">
+            <img src="${p.image}">
+            <h3>${p.name}</h3>
+            <p>₹${p.price}</p>
+            <p>⭐ ${p.rating}</p>
+            <p>${p.category}</p>
+        </div>`;
+            });
+            productsDiv.innerHTML = html;
+        }
+
+        let productsDiv = document.getElementById("products");
+        showProducts(products);
+
+        // FILTERS & SORT
+        function FilterbyCategory(arr) {
+            showProducts(arr.filter(p => p.category === filters.value));
+        }
+        function FilterByPrice(arr) {
+            showProducts(arr.filter(p => p.price >= 1000));
+        }
+        function FilterByRating(arr) {
+            showProducts(arr.filter(p => p.rating >= 4));
+        }
+        function lowtohigh(arr) {
+            arr.sort((a, b) => a.price - b.price);
+            showProducts(arr);
+        }
+        function Hightolow(arr) {
+            arr.sort((a, b) => b.price - a.price);
+            showProducts(arr);
+        }
+        function SearchProducts(arr) {
+            showProducts(arr.filter(p => p.name.toLowerCase().includes(searchbox.value.toLowerCase())));
+        }
+
+        // ADD & REMOVE
+        function AddItems() {
+            products.push({
+                name: itemname.value,
+                price: +itemprice.value,
+                rating: +itemrating.value,
+                category: itemcategory.value,
+                image: itemimage.value
+            });
+            localStorage.setItem("products", JSON.stringify(products));
+            showProducts(products);
+            itemname.value = ""; itemprice.value = ""; itemrating.value = ""; itemcategory.value = ""; itemimage.value = "";
+            let toastedmsg = document.getElementById("tostmessage");
+            toastedmsg.style.color = "green";
+            toastedmsg.innerHTML = "Product Added";
+            toastedmsg.style.display = "block"
+            setTimeout(function () {
+                toastedmsg.style.display = "none";
+            }, 3000)
+        }
+        function RemoveItems(name) {
+            let confirmationdel = confirm("Are you sure to delete this item ?");
+            if (confirmationdel == true) {
+                let i = products.findIndex(p => p.name === name);
+                if (i != -1) {
+                    products.splice(i, 1);
+                    localStorage.setItem("products", JSON.stringify(products));
+                    showProducts(products);
+                }
+                let toastedmsg = document.getElementById("tostmessage");
+                toastedmsg.style.color = "red";
+                toastedmsg.innerHTML = "Product Removed";
+                toastedmsg.style.display = "block"
+                setTimeout(function () {
+                    toastedmsg.style.display = "none";
+                }, 3000)
+            }
+            else {
+                let toastedmsg = document.getElementById("tostmessage");
+                toastedmsg.style.color = "red";
+                toastedmsg.innerHTML = "Product Deletin Canceled";
+                toastedmsg.style.display = "block"
+                setTimeout(function () {
+                    toastedmsg.style.display = "none";
+                }, 3000)
+            }
+
+        }
+        let mblctrl = document.getElementById("mblctrlbtn").addEventListener("click", function () {
+            document.getElementById("forms").classList.toggle("formmbl");
+        })
+
+
+    </script>
+</body>
+
+</html>
