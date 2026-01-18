@@ -217,6 +217,7 @@
         // FILTERS & SORT
         function FilterbyCategory(arr) {
             showProducts(arr.filter(p => p.category === filters.value));
+            document.getElementById("forms").classList.toggle("formmbl");
         }
         function FilterByPrice(arr) {
             showProducts(arr.filter(p => p.price >= 1000));
@@ -291,5 +292,6 @@
 
     </script>
 </body>
+
 
 </html>
